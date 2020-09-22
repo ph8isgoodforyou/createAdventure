@@ -9,10 +9,36 @@ from .models import Trip as TripModel
 from .serializer import TripSerializer
 from rest_framework import generics, status
 
+import coreapi
+from rest_framework.schemas import AutoSchema
+
+class TripSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        extra_fields = []
+        if method.lower() in ['post', 'put']:
+            extra_fields = [
+                coreapi.Field(
+                    'trip_type',
+                    required=True
+                ),
+                coreapi.Field(
+                    'overall_price',
+                    required=True
+                ),
+                coreapi.Field(
+                    'list_of_items',
+                    required=True
+                ),
+            ]
+        manual_fields = super().get_manual_fields(path, method)
+        return manual_fields + extra_fields
+
 class listOfTrips(APIView):
     """
     List all trips, or create a new trip.
     """
+
+    schema = TripSchema()
 
     def get(self, request, format=None):
         trips = TripModel.objects.all()
@@ -32,6 +58,8 @@ class Trip(APIView):
     """
     Retrieve, update or delete a trip instance.
     """
+
+    schema = TripSchema()
 
     def get_object(self, pk):
         try:

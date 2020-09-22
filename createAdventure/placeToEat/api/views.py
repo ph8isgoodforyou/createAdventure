@@ -9,10 +9,36 @@ from .models import PlaceToEat as PlaceToEatModel
 from .serializer import PlaceToEatSerializer
 from rest_framework import generics, status
 
+import coreapi
+from rest_framework.schemas import AutoSchema
+
+class PlaceToEatSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        extra_fields = []
+        if method.lower() in ['post', 'put']:
+            extra_fields = [
+                coreapi.Field(
+                    'title',
+                    required=True
+                ),
+                coreapi.Field(
+                    'institution_type',
+                    required=True
+                ),
+                coreapi.Field(
+                    'rating',
+                    required=True
+                ),
+            ]
+        manual_fields = super().get_manual_fields(path, method)
+        return manual_fields + extra_fields
+
 class listOfPlacesToEat(APIView):
     """
     List all placesToEat, or create a new placeToEat.
     """
+
+    schema = PlaceToEatSchema()
 
     def get(self, request, format=None):
         placesToEat = PlaceToEatModel.objects.all()
@@ -32,6 +58,8 @@ class placeToEat(APIView):
     """
     Retrieve, update or delete a placeToEat instance.
     """
+
+    schema = PlaceToEatSchema()
 
     def get_object(self, pk):
         try:

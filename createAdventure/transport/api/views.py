@@ -9,10 +9,48 @@ from .models import Transport as TransportModel
 from .serializer import TransportSerializer
 from rest_framework import generics, status
 
+import coreapi
+from rest_framework.schemas import AutoSchema
+
+class TransportSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        extra_fields = []
+        if method.lower() in ['post', 'put']:
+            extra_fields = [
+                coreapi.Field(
+                    'transportation_type',
+                    required=True
+                ),
+                coreapi.Field(
+                    'name',
+                    required=True
+                ),
+                coreapi.Field(
+                    'price',
+                    required=True
+                ),
+                coreapi.Field(
+                    'date_available',
+                    required=True
+                ),
+                coreapi.Field(
+                    'address',
+                    required=True
+                ),
+                coreapi.Field(
+                    'link',
+                    required=True
+                ),
+            ]
+        manual_fields = super().get_manual_fields(path, method)
+        return manual_fields + extra_fields
+
 class listOfTransports(APIView):
     """
     List all Transports, or create a new Transport.
     """
+
+    schema = TransportSchema()
 
     def get(self, request, format=None):
         transports = TransportModel.objects.all()
@@ -32,6 +70,8 @@ class Transport(APIView):
     """
     Retrieve, update or delete a Transport instance.
     """
+
+    schema = TransportSchema()
 
     def get_object(self, pk):
         try:

@@ -9,10 +9,44 @@ from .models import PointOfInterest as PointOfInterestModel
 from .serializer import PointOfInterestSerializer
 from rest_framework import generics, status
 
+import coreapi
+from rest_framework.schemas import AutoSchema
+
+class PointOfInterestSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        extra_fields = []
+        if method.lower() in ['post', 'put']:
+            extra_fields = [
+                coreapi.Field(
+                    'name',
+                    required=True
+                ),
+                coreapi.Field(
+                    'price_to_visit',
+                    required=True
+                ),
+                coreapi.Field(
+                    'images_links',
+                    required=True
+                ),
+                coreapi.Field(
+                    'rating',
+                    required=True
+                ),
+                coreapi.Field(
+                    'address',
+                    required=True
+                ),
+            ]
+        manual_fields = super().get_manual_fields(path, method)
+        return manual_fields + extra_fields
+
 class listOfPointsOfInterest(APIView):
     """
     List all pointOfInterest, or create a new pointOfInterest.
     """
+
+    schema = PointOfInterestSchema()
 
     def get(self, request, format=None):
         pointsOfInterest = PointOfInterestModel.objects.all()
@@ -32,6 +66,8 @@ class pointOfInterest(APIView):
     """
     Retrieve, update or delete a pointOfInterest instance.
     """
+
+    schema = PointOfInterestSchema()
 
     def get_object(self, pk):
         try:

@@ -9,10 +9,48 @@ from .models import Accommodation as AccommodationModel
 from .serializer import AccommodationSerializer
 from rest_framework import  status
 
+import coreapi
+from rest_framework.schemas import AutoSchema
+
+class AccommodationSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        extra_fields = []
+        if method.lower() in ['post', 'put']:
+            extra_fields = [
+                coreapi.Field(
+                    'title',
+                    required=True
+                ),
+                coreapi.Field(
+                    'address',
+                    required=True
+                ),
+                coreapi.Field(
+                    'room',
+                    required=True
+                ),
+                coreapi.Field(
+                    'accommodation_type',
+                    required=True
+                ),
+                coreapi.Field(
+                    'price',
+                    required=True
+                ),
+                coreapi.Field(
+                    'date',
+                    required=True
+                ),
+            ]
+        manual_fields = super().get_manual_fields(path, method)
+        return manual_fields + extra_fields
+
 class listOfAccommodations(APIView):
     """
     List all accommodations, or create a new accommodation.
     """
+
+    schema = AccommodationSchema()
 
     def get(self, request, format=None):
         accommodation = AccommodationModel.objects.all()
@@ -32,6 +70,8 @@ class Accommodation(APIView):
     """
     Retrieve, update or delete a accommodation instance.
     """
+
+    schema = AccommodationSchema()
 
     def get_object(self, pk):
         try:
