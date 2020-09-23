@@ -7,10 +7,11 @@ from rest_framework.views import APIView
 
 from .models import Accommodation as AccommodationModel
 from .serializer import AccommodationSerializer
-from rest_framework import  status
+from rest_framework import status, generics
 
 import coreapi
 from rest_framework.schemas import AutoSchema
+
 
 class AccommodationSchema(AutoSchema):
     def get_manual_fields(self, path, method):
@@ -19,31 +20,40 @@ class AccommodationSchema(AutoSchema):
             extra_fields = [
                 coreapi.Field(
                     'title',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'address',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'room',
-                    required=True
+                    required=True,
+                    type='integer',
                 ),
                 coreapi.Field(
                     'accommodation_type',
-                    required=True
+                    required=True,
+                    type='integer',
                 ),
                 coreapi.Field(
                     'price',
-                    required=True
+                    required=True,
+                    type='number',
+                ),
+                coreapi.Field(
+                    'rating',
+                    required=True,
+                    type='integer',
                 ),
                 coreapi.Field(
                     'date',
-                    required=True
+                    required=True,
                 ),
             ]
         manual_fields = super().get_manual_fields(path, method)
         return manual_fields + extra_fields
+
 
 class listOfAccommodations(APIView):
     """
@@ -57,14 +67,19 @@ class listOfAccommodations(APIView):
         if accommodation.count() > 0:
             serializer = AccommodationSerializer(accommodation, many=True)
             return JsonResponse(serializer.data, safe=False)
-        else: return JsonResponse('HTTP_404_NOT_FOUND', safe=False)
+        else:
+            return JsonResponse('HTTP_404_NOT_FOUND', safe=False)
 
     def post(self, request, format=None):
         serializer = AccommodationSerializer(data=request.data)
+        # print('request data: ' + str(request.data))
+        # print(serializer.is_valid())
+        # print(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Accommodation(APIView):
     """
@@ -96,4 +111,3 @@ class Accommodation(APIView):
         accommodation = self.get_object(pk)
         accommodation.delete()
         return JsonResponse(status=status.HTTP_204_NO_CONTENT)
-

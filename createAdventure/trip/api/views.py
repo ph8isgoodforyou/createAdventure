@@ -19,11 +19,13 @@ class TripSchema(AutoSchema):
             extra_fields = [
                 coreapi.Field(
                     'trip_type',
-                    required=True
+                    required=True,
+                    type='integer',
                 ),
                 coreapi.Field(
                     'overall_price',
-                    required=True
+                    required=True,
+                    type='number',
                 ),
                 coreapi.Field(
                     'list_of_items',

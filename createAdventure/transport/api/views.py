@@ -19,7 +19,8 @@ class TransportSchema(AutoSchema):
             extra_fields = [
                 coreapi.Field(
                     'transportation_type',
-                    required=True
+                    required=True,
+                    type='integer',
                 ),
                 coreapi.Field(
                     'name',
@@ -27,7 +28,8 @@ class TransportSchema(AutoSchema):
                 ),
                 coreapi.Field(
                     'price',
-                    required=True
+                    required=True,
+                    type='number',
                 ),
                 coreapi.Field(
                     'date_available',

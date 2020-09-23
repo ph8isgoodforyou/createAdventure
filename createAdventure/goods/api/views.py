@@ -11,6 +11,7 @@ from rest_framework import generics, status
 import coreapi
 from rest_framework.schemas import AutoSchema
 
+
 class GoodsSchema(AutoSchema):
     def get_manual_fields(self, path, method):
         extra_fields = []
@@ -18,19 +19,20 @@ class GoodsSchema(AutoSchema):
             extra_fields = [
                 coreapi.Field(
                     'name',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'price',
-                    required=True
+                    required=True,
+                    type='number',
                 ),
                 coreapi.Field(
                     'seller',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'state',
-                    required=True
+                    required=True,
                 ),
             ]
         manual_fields = super().get_manual_fields(path, method)
@@ -52,7 +54,7 @@ class listOfGoods(APIView):
             return JsonResponse(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, format=None):
-        serializer = ItemSerializer(data=request.data)
+        serializer = ItemSerializer(data=request)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)

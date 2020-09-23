@@ -23,7 +23,7 @@ class CountrySchema(AutoSchema):
                 ),
                 coreapi.Field(
                     'population',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'largest_city',

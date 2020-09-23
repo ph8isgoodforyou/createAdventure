@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     # 'createadventure.herokuapp.com',
-    '127.0.0.1',
+    # '127.0.0.1',
+    '*',
 ]
 
 # Application definition
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_swagger',
+    'rest_framework.authtoken',
     'accommodation',
     'country',
     'goods',
@@ -140,5 +142,8 @@ REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': [
     #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     # ],
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }

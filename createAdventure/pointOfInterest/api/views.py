@@ -23,7 +23,8 @@ class PointOfInterestSchema(AutoSchema):
                 ),
                 coreapi.Field(
                     'price_to_visit',
-                    required=True
+                    required=True,
+                    type='number',
                 ),
                 coreapi.Field(
                     'images_links',
@@ -31,7 +32,8 @@ class PointOfInterestSchema(AutoSchema):
                 ),
                 coreapi.Field(
                     'rating',
-                    required=True
+                    required=True,
+                    type='integer',
                 ),
                 coreapi.Field(
                     'address',

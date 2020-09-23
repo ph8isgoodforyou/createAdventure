@@ -27,7 +27,8 @@ class PlaceToEatSchema(AutoSchema):
                 ),
                 coreapi.Field(
                     'rating',
-                    required=True
+                    required=True,
+                    type='integer',
                 ),
             ]
         manual_fields = super().get_manual_fields(path, method)

@@ -36,7 +36,7 @@ class Accommodation(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
-    room = models.CharField(max_length=100)
+    room = models.IntegerField()
     accommodation_type = models.IntegerField(choices=AccommodationTypes.choices(), default=AccommodationTypes.Hotel)
     price = models.FloatField(max_length=100)
     rating = models.IntegerField(choices=RatingTypes.choices(), default=RatingTypes.FIVE_STAR)
