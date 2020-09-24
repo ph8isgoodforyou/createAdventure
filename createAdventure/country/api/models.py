@@ -9,7 +9,6 @@ import transport.api.models
 # Create your models here.
 class Country(models.Model):
     id = models.AutoField(primary_key=True)
-    fk_item = models.ForeignKey(goods.api.models.Item, on_delete=models.CASCADE)
     fk_accommodation = models.ForeignKey(accommodation.api.models.Accommodation, on_delete=models.CASCADE)
     fk_placeToEat = models.ForeignKey(placeToEat.api.models.PlaceToEat, on_delete=models.CASCADE)
     fk_pointOfInterest = models.ForeignKey(pointOfInterest.api.models.PointOfInterest, on_delete=models.CASCADE)

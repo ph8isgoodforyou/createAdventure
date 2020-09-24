@@ -110,4 +110,5 @@ class Accommodation(APIView):
     def delete(self, request, pk, format=None):
         accommodation = self.get_object(pk)
         accommodation.delete()
-        return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)

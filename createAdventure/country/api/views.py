@@ -18,8 +18,28 @@ class CountrySchema(AutoSchema):
         if method.lower() in ['post', 'put']:
             extra_fields = [
                 coreapi.Field(
+                    'fk_accommodation',
+                    required=True,
+                    type='integer',
+                ),
+                coreapi.Field(
+                    'fk_placeToEat',
+                    required=True,
+                    type='integer',
+                ),
+                coreapi.Field(
+                    'fk_pointOfInterest',
+                    required=True,
+                    type='integer',
+                ),
+                coreapi.Field(
+                    'fk_transport',
+                    required=True,
+                    type='integer',
+                ),
+                coreapi.Field(
                     'name',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'population',
@@ -27,19 +47,19 @@ class CountrySchema(AutoSchema):
                 ),
                 coreapi.Field(
                     'largest_city',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'religion',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'currency',
-                    required=True
+                    required=True,
                 ),
                 coreapi.Field(
                     'time_zone',
-                    required=True
+                    required=True,
                 ),
             ]
         manual_fields = super().get_manual_fields(path, method)
@@ -95,4 +115,5 @@ class Country(APIView):
     def delete(self, request, pk, format=None):
         country = self.get_object(pk)
         country.delete()
-        return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)

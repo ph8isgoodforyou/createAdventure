@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 from requests import Response
@@ -18,7 +19,7 @@ class GoodsSchema(AutoSchema):
         if method.lower() in ['post', 'put']:
             extra_fields = [
                 coreapi.Field(
-                    'name',
+                    'title',
                     required=True,
                 ),
                 coreapi.Field(
@@ -33,6 +34,16 @@ class GoodsSchema(AutoSchema):
                 coreapi.Field(
                     'state',
                     required=True,
+                    type='integer',
+                ),
+                coreapi.Field(
+                    'description',
+                    required=True,
+                ),
+                coreapi.Field(
+                    'type_of_item',
+                    required=True,
+                    type='integer',
                 ),
             ]
         manual_fields = super().get_manual_fields(path, method)
@@ -51,15 +62,17 @@ class listOfGoods(APIView):
             serializer = ItemSerializer(items, many=True)
             return JsonResponse(serializer.data, safe=False)
         else:
-            return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+            # return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse('HTTP_404_NOT_FOUND', safe=False)
+
 
     def post(self, request, format=None):
-        serializer = ItemSerializer(data=request)
+        serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        # return JsonResponse('HTTP_400_BAD_REQUEST', safe=False)
 
 class Item(APIView):
     """

@@ -93,4 +93,5 @@ class pointOfInterest(APIView):
     def delete(self, request, pk, format=None):
         pointOfInterest = self.get_object(pk)
         pointOfInterest.delete()
-        return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)

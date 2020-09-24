@@ -23,4 +23,4 @@ class Transport(models.Model):
     price = models.FloatField(max_length=100)
     date_available =models.DateField()
     address = models.CharField(max_length=100)
-    link = models.CharField(max_length=100)
+    link = models.CharField(max_length=500)

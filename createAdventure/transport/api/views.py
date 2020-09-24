@@ -97,4 +97,5 @@ class Transport(APIView):
     def delete(self, request, pk, format=None):
         transport = self.get_object(pk)
         transport.delete()
-        return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)
