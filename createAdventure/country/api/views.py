@@ -72,48 +72,52 @@ class listOfCountries(APIView):
 
     schema = CountrySchema()
 
-    def get(self, request, format=None):
+    def get(self, request):
         countries = CountryModel.objects.all()
         if countries.count() > 0:
             serializer = CountrySerializer(countries, many=True)
-            return JsonResponse(serializer.data, safe=False)
-        else: return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        else:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = CountrySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class Country(APIView):
+class particularCountry(APIView):
     """
     Retrieve, update or delete a country instance.
     """
 
     schema = CountrySchema()
 
-    def get_object(self, pk):
+    def get(self, request, pk):
         try:
-            return CountryModel.objects.get(pk=pk)
+            country = CountryModel.objects.get(pk=pk)
+            serializer = CountrySerializer(country)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except CountryModel.DoesNotExist:
-            raise Http404
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def get(self, request, pk, format=None):
-        country = self.get_object(pk)
-        serializer = CountrySerializer(country)
-        return JsonResponse(serializer.data)
+    def put(self, request, pk):
+        try:
+            country = CountryModel.objects.get(pk=pk)
+            serializer = CountrySerializer(country, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except CountryModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def put(self, request, pk, format=None):
-        country = self.get_object(pk)
-        serializer = CountrySerializer(country, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        country = self.get_object(pk)
-        country.delete()
-        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
-        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)
+    def delete(self, request, pk):
+        try:
+            country = CountryModel.objects.get(pk=pk)
+            country.delete()
+            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+        except CountryModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)

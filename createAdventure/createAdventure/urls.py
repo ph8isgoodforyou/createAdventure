@@ -8,14 +8,14 @@ from django.urls import path, include
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
 
+
 schema_view = get_swagger_view(title='Create Adventure API Documentation')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # url(r'docs/', schema_view, name='swagger'),
-    path('', login_required(schema_view), name='swagger'),
-
+    url(r'docs/', schema_view, name='swagger'),
+    # path('', login_required(schema_view), name='swagger'),
     # url(r'account/', include('allauth.urls')),
     path('account/', include('allauth.urls')),
 

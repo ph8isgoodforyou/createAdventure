@@ -1,3 +1,4 @@
+from django.core.checks import messages
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 from requests import Response
@@ -62,19 +63,16 @@ class listOfAccommodations(APIView):
 
     schema = AccommodationSchema()
 
-    def get(self, request, format=None):
+    def get(self, request):
         accommodation = AccommodationModel.objects.all()
         if accommodation.count() > 0:
             serializer = AccommodationSerializer(accommodation, many=True)
-            return JsonResponse(serializer.data, safe=False)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
         else:
-            return JsonResponse('HTTP_404_NOT_FOUND', safe=False)
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = AccommodationSerializer(data=request.data)
-        # print('request data: ' + str(request.data))
-        # print(serializer.is_valid())
-        # print(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
@@ -88,27 +86,36 @@ class Accommodation(APIView):
 
     schema = AccommodationSchema()
 
-    def get_object(self, pk):
+    # def get_object(self, pk):
+    #     try:
+    #         return AccommodationModel.objects.get(pk=pk)
+    #     except AccommodationModel.DoesNotExist:
+    #         raise Http404
+
+    def get(self, request, pk):
         try:
-            return AccommodationModel.objects.get(pk=pk)
+            accommodation = AccommodationModel.objects.get(pk=pk)
+            serializer = AccommodationSerializer(accommodation)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except AccommodationModel.DoesNotExist:
-            raise Http404
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def get(self, request, pk, format=None):
-        accommodation = self.get_object(pk)
-        serializer = AccommodationSerializer(accommodation)
-        return JsonResponse(serializer.data)
+    def put(self, request, pk):
+        try:
+            accommodation = AccommodationModel.objects.get(pk=pk)
+            serializer = AccommodationSerializer(accommodation, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AccommodationModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def put(self, request, pk, format=None):
-        accommodation = self.get_object(pk)
-        serializer = AccommodationSerializer(accommodation, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        accommodation = self.get_object(pk)
-        accommodation.delete()
-        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
-        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)
+    def delete(self, request, pk):
+        try:
+            accommodation = AccommodationModel.objects.get(pk=pk)
+            accommodation.delete()
+            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+        except AccommodationModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)

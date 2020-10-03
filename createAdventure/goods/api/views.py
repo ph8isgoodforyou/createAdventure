@@ -1,11 +1,6 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import HttpResponse, JsonResponse
 from requests import Response
-from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
-
 from .models import Item as ItemModel
 from .serializer import ItemSerializer
 from rest_framework import generics, status
@@ -56,23 +51,20 @@ class listOfGoods(APIView):
     """
     schema = GoodsSchema()
 
-    def get(self, request, format=None):
+    def get(self, request):
         items = ItemModel.objects.all()
         if items.count() > 0:
             serializer = ItemSerializer(items, many=True)
-            return JsonResponse(serializer.data, safe=False)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
         else:
-            # return JsonResponse(status=status.HTTP_404_NOT_FOUND)
-            return JsonResponse('HTTP_404_NOT_FOUND', safe=False)
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # return JsonResponse('HTTP_400_BAD_REQUEST', safe=False)
 
 class Item(APIView):
     """
@@ -80,26 +72,30 @@ class Item(APIView):
     """
     schema = GoodsSchema()
 
-    def get_object(self, pk):
+    def get(self, request, pk):
         try:
-            return ItemModel.objects.get(pk=pk)
+            item = ItemModel.objects.get(pk=pk)
+            serializer = ItemSerializer(item)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except ItemModel.DoesNotExist:
-            raise Http404
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def get(self, request, pk, format=None):
-        item = self.get_object(pk)
-        serializer = ItemSerializer(item)
-        return JsonResponse(serializer.data)
+    def put(self, request, pk):
+        try:
+            item = ItemModel.objects.get(pk=pk)
+            serializer = ItemSerializer(item, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ItemModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def put(self, request, pk, format=None):
-        item = self.get_object(pk)
-        serializer = ItemSerializer(item, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        item = self.get_object(pk)
-        item.delete()
-        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)
+    def delete(self, request, pk):
+        try:
+            item = ItemModel.objects.get(pk=pk)
+            item.delete()
+            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+        except ItemModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)

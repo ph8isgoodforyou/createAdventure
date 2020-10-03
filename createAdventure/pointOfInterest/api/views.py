@@ -50,14 +50,15 @@ class listOfPointsOfInterest(APIView):
 
     schema = PointOfInterestSchema()
 
-    def get(self, request, format=None):
+    def get(self, request):
         pointsOfInterest = PointOfInterestModel.objects.all()
         if pointsOfInterest.count() > 0:
             serializer = PointOfInterestSerializer(pointsOfInterest, many=True)
-            return JsonResponse(serializer.data, safe=False)
-        else: return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        else:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = PointOfInterestSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -71,27 +72,30 @@ class pointOfInterest(APIView):
 
     schema = PointOfInterestSchema()
 
-    def get_object(self, pk):
+    def get(self, request, pk):
         try:
-            return PointOfInterestModel.objects.get(pk=pk)
+            pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
+            serializer = PointOfInterestSerializer(pointOfInterest)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except PointOfInterestModel.DoesNotExist:
-            raise Http404
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def get(self, request, pk, format=None):
-        pointOfInterest = self.get_object(pk)
-        serializer = PointOfInterestSerializer(pointOfInterest)
-        return JsonResponse(serializer.data)
+    def put(self, request, pk):
+        try:
+            pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
+            serializer = PointOfInterestSerializer(pointOfInterest, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except PointOfInterestModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def put(self, request, pk, format=None):
-        pointOfInterest = self.get_object(pk)
-        serializer = PointOfInterestSerializer(pointOfInterest, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        pointOfInterest = self.get_object(pk)
-        pointOfInterest.delete()
-        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
-        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)
+    def delete(self, request, pk):
+        try:
+            pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
+            pointOfInterest.delete()
+            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+        except PointOfInterestModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)

@@ -42,14 +42,15 @@ class listOfPlacesToEat(APIView):
 
     schema = PlaceToEatSchema()
 
-    def get(self, request, format=None):
+    def get(self, request):
         placesToEat = PlaceToEatModel.objects.all()
         if placesToEat.count() > 0:
             serializer = PlaceToEatSerializer(placesToEat, many=True)
-            return JsonResponse(serializer.data, safe=False)
-        else: return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        else:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = PlaceToEatSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -63,27 +64,30 @@ class placeToEat(APIView):
 
     schema = PlaceToEatSchema()
 
-    def get_object(self, pk):
+    def get(self, request, pk):
         try:
-            return PlaceToEatModel.objects.get(pk=pk)
+            placeToEat = self.get_object(pk)
+            serializer = PlaceToEatSerializer(placeToEat)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+
+    def put(self, request, pk):
+        try:
+            placeToEat = self.get_object(pk)
+            serializer = PlaceToEatSerializer(placeToEat, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except PlaceToEatModel.DoesNotExist:
-            raise Http404
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-    def get(self, request, pk, format=None):
-        placeToEat = self.get_object(pk)
-        serializer = PlaceToEatSerializer(placeToEat)
-        return JsonResponse(serializer.data)
-
-    def put(self, request, pk, format=None):
-        placeToEat = self.get_object(pk)
-        serializer = PlaceToEatSerializer(placeToEat, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        placeToEat = self.get_object(pk)
-        placeToEat.delete()
-        # return JsonResponse(status=status.HTTP_204_NO_CONTENT)
-        return JsonResponse('HTTP_204_NO_CONTENT', safe=False)
+    def delete(self, request, pk):
+        try:
+            placeToEat = PlaceToEatModel.objects.get(pk=pk)
+            placeToEat.delete()
+            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+        except PlaceToEatModel.DoesNotExist:
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)

@@ -1,6 +1,5 @@
 from django.db import models
 import accommodation.api.models
-import goods.api.models
 import placeToEat.api.models
 import pointOfInterest.api.models
 import transport.api.models
