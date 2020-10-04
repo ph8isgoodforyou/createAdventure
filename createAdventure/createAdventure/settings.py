@@ -189,5 +189,3 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
-import django_heroku
-django_heroku.settings(locals())
