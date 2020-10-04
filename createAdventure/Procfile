@@ -1,1 +1,1 @@
-web: gunicorn createAdventure.wsgi
+web: gunicorn createAdventure.wsgi --log-file -
