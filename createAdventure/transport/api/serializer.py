@@ -5,4 +5,12 @@ from .models import Transport
 class TransportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transport
-        fields = '__all__'
+        fields = [
+            'id',
+            'transportation_type',
+            'name',
+            'price',
+            'date_available',
+            'address',
+            'link',
+        ]

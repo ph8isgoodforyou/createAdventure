@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital@1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <script src="https://kit.fontawesome.com/1c0dec8ce3.js" crossorigin="anonymous"></script>
+    <title>Footer</title>
+</head>
+<body>
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h1 class="logo-text"><span>create</span>Adventure</h1>
+                <p>Some description</p>
+                <br>
+                <div class="contact">
+                    <span><i class="fas fa-phone"></i>&nbsp; +3745626325</span>
+                    <span><i class="fas fa-envelope"></i>&nbsp; info@createadventure.com</span>
+                </div>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section links">
+                <h2>Quik Links</h2>
+                <br>
+                <ul>
+                    <a href="#"><li>Events</li></a>
+                    <a href="#"><li>Team</li></a>
+                    <a href="#"><li>Mentores</li></a>
+                    <a href="#"><li>Gallery</li></a>
+                    <a href="#"><li>Terms and Conditions</li></a>
+                </ul>
+            </div>
+            <div class="footer-section contact-form">
+                <h2>Contact Us!</h2>
+                <br>
+                <form action="footer.html" method="POST">
+                    <input type="email" name="email" class="text-input contact-input" placeholder="Your email adress...">
+                    <textarea name="message" class="text-input contact-input" placeholder="Your message..."></textarea>
+                    <div>
+                        <button type="submit" class="btn btn-big contact-btn">
+                        <i class="fas fa-envelope"></i>
+                        Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+                &copy; createAdventure.com
+        </div>
+    </div>
+</body>
+</html>

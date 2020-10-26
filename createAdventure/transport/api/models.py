@@ -1,5 +1,9 @@
 from enum import IntEnum
 from django.db import models
+from django.conf import settings
+
+import country
+
 
 class TransportationTypes(IntEnum):
     Plane = 1
@@ -24,3 +28,5 @@ class Transport(models.Model):
     date_available =models.DateField()
     address = models.CharField(max_length=100)
     link = models.CharField(max_length=500)
+    # fk_country = models.ForeignKey(country.api.models.Country, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

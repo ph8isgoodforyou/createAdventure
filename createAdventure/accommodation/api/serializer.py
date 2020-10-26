@@ -5,4 +5,13 @@ from .models import Accommodation
 class AccommodationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accommodation
-        fields = '__all__'
+        fields = [
+            'id',
+            'title',
+            'address',
+            'room',
+            'accommodation_type',
+            'price',
+            'rating',
+            'date',
+        ]

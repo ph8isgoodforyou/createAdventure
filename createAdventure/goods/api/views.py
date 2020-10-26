@@ -1,11 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from requests import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .models import Item as ItemModel
 from .serializer import ItemSerializer
 from rest_framework import generics, status
 import coreapi
 from rest_framework.schemas import AutoSchema
+from rest_framework.decorators import permission_classes
 
 
 class GoodsSchema(AutoSchema):
@@ -47,29 +50,42 @@ class GoodsSchema(AutoSchema):
 
 class listOfGoods(APIView):
     """
-    List all items, or create a new item.
+    List all items or Create a new item
     """
+
+    permission_classes = [IsAuthenticated]
+
     schema = GoodsSchema()
 
     def get(self, request):
-        items = ItemModel.objects.all()
-        if items.count() > 0:
-            serializer = ItemSerializer(items, many=True)
-            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        user = request.user
+        if user.is_staff:
+            items = ItemModel.objects.all()
+            if items.count() > 0:
+                serializer = ItemSerializer(items, many=True)
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+            else:
+                return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
         else:
-            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
 
     def post(self, request):
-        serializer = ItemSerializer(data=request.data)
+        account = request.user
+        item = ItemModel(author=account)
+
+        serializer = ItemSerializer(item, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class Item(APIView):
     """
         Retrieve, update or delete a item instance.
     """
+    permission_classes = [IsAuthenticated]
+
     schema = GoodsSchema()
 
     def get(self, request, pk):
@@ -83,19 +99,41 @@ class Item(APIView):
     def put(self, request, pk):
         try:
             item = ItemModel.objects.get(pk=pk)
-            serializer = ItemSerializer(item, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            user = request.user
+            if user.is_staff:
+                serializer = ItemSerializer(item, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            elif item.author == user:
+                serializer = ItemSerializer(item, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if item.author != user:
+                return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+
         except ItemModel.DoesNotExist:
             return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
     def delete(self, request, pk):
         try:
             item = ItemModel.objects.get(pk=pk)
-            item.delete()
-            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+
+            user = request.user
+            if user.is_staff:
+                item.delete()
+                return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+            elif item.author == user:
+                item.delete()
+                return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+            if item.author != user:
+                return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+
         except ItemModel.DoesNotExist:
             return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)

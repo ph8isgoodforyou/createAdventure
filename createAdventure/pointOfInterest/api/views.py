@@ -4,7 +4,7 @@ from requests import Response
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
-
+from rest_framework.permissions import IsAuthenticated
 from .models import PointOfInterest as PointOfInterestModel
 from .serializer import PointOfInterestSerializer
 from rest_framework import generics, status
@@ -48,27 +48,43 @@ class listOfPointsOfInterest(APIView):
     List all pointOfInterest, or create a new pointOfInterest.
     """
 
+    permission_classes = [IsAuthenticated]
+
     schema = PointOfInterestSchema()
 
     def get(self, request):
-        pointsOfInterest = PointOfInterestModel.objects.all()
-        if pointsOfInterest.count() > 0:
-            serializer = PointOfInterestSerializer(pointsOfInterest, many=True)
-            return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+        user = request.user
+        if user.is_staff:
+            pointsOfInterest = PointOfInterestModel.objects.all()
+            if pointsOfInterest.count() > 0:
+                serializer = PointOfInterestSerializer(pointsOfInterest, many=True)
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+            else:
+                return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
         else:
-            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
 
     def post(self, request):
-        serializer = PointOfInterestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        if user.is_staff:
+
+            account = request.user
+            pointsOfInterest = PointOfInterestModel(author=account)
+
+            serializer = PointOfInterestSerializer(pointsOfInterest, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
 
 class pointOfInterest(APIView):
     """
     Retrieve, update or delete a pointOfInterest instance.
     """
+
+    permission_classes = [IsAuthenticated]
 
     schema = PointOfInterestSchema()
 
@@ -81,21 +97,39 @@ class pointOfInterest(APIView):
             return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
     def put(self, request, pk):
-        try:
-            pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
-            serializer = PointOfInterestSerializer(pointOfInterest, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except PointOfInterestModel.DoesNotExist:
-            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+        user = request.user
+        if user.is_staff:
+            try:
+                pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
+
+                # user = request.user
+                # if pointOfInterest.author != user:
+                #     return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+
+                serializer = PointOfInterestSerializer(pointOfInterest, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except PointOfInterestModel.DoesNotExist:
+                return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+        else:
+            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
 
     def delete(self, request, pk):
-        try:
-            pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
-            pointOfInterest.delete()
-            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
-        except PointOfInterestModel.DoesNotExist:
-            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+        user = request.user
+        if user.is_staff:
+            try:
+                pointOfInterest = PointOfInterestModel.objects.get(pk=pk)
+
+                # user = request.user
+                # if pointOfInterest.author != user:
+                #     return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+
+                pointOfInterest.delete()
+                return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+            except PointOfInterestModel.DoesNotExist:
+                return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+        else:
+            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)

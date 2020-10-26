@@ -1,6 +1,7 @@
 """createAdventure URL Configuration
 """
-
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.http import request
@@ -8,17 +9,29 @@ from django.urls import path, include
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
 
+# from account.views import (
+#     registration_view,
+# )
+from account.views import (
+    registration_view,
+    logout_view,
+    login_view,
+)
 
 schema_view = get_swagger_view(title='Create Adventure API Documentation')
 
 urlpatterns = [
+    # url('/', home, name="home"),
+    # url('login/', login_view, name="login"),
+    # url('logout/', logout_view, name="logout"),
+    # url('register/', registration_view, name="register"),
+
     path('admin/', admin.site.urls),
 
     url(r'docs/', schema_view, name='swagger'),
     # path('', login_required(schema_view), name='swagger'),
-    # url(r'account/', include('allauth.urls')),
-    path('account/', include('allauth.urls')),
-
+    # path('', include('account.api.urls')),
+    path('', include('account.urls')),
     path('', include('accommodation.urls')),
     path('', include('country.urls')),
     path('', include('goods.urls')),
@@ -27,7 +40,9 @@ urlpatterns = [
     path('', include('transport.urls')),
     path('', include('trip.urls')),
 ]
-
+# if settings.DEBUG:
+#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 """
             allauth provided urls
 --------------------------------------------------------

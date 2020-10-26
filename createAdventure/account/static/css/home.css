@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Caveat', cursive;
+}
+button{
+    font-family: 'Caveat', cursive;
+}
+
+.page-wrapper {
+    min-height: 100%;
+}
+main{
+    background: #FFE3EE;
+}
+
+.intro{
+    /*background: radial-gradient(#F9F871, #E6B954, #32466D, #28040F);*/
+    /*background: linear-gradient(#28040F, #32466D, #E6B954, #F9F871, #E6B954, #32466D, #28040F);*/
+    background: #FFE3EE;
+}
+
+.presentation{
+    display: flex;
+    width: 90%;
+    margin: auto;
+    min-height: 80vh;
+    align-items: center;
+}
+.introduction{
+    flex: 1;
+}
+.intro-text{
+    font-size: 44px;
+    font-weight: 500;
+    background: linear-gradient(to right, #512904, #050301);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.intro-text p{
+    margin: 5px;
+    font-size: 22px;
+    color: #585772;
+}
+.cover{
+    flex: 1;
+    height: 60vh;
+}
+.cover img{
+    height: 100%;
+    border-radius: 50%;
+
+}
+
+@media only screen and (max-width: 480px) {
+    .logo-huge {
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    .logo-huge {
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 920px) {
+    .logo-huge {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .presentation{
+        flex-direction: column;
+    }
+    .introduction{
+        margin-top: 5vh;
+        text-align: center;
+    }
+    .intro-text h1{
+        font-size: 30px;
+    }
+    .intro-text p{
+        font-size: 18px;
+    }
+    .cover img{
+        height: 80%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.qoute {
+    /*font-family: 'Bitter', serif;*/
+    font-family: 'Caveat', cursive;
+    background: radial-gradient(#32466D, #28040F);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.logo-huge {
+    font-family: 'Sansita Swashed', cursive;
+    font-size: 50px;
+}
+
+.page-wrapper .front-img img{
+    height: 50%;
+    width: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.content {
+    background: #E4F0FF;
+    color: #32466D;
+}
+
+@media only screen and (max-width: 480px) {
+    .logo-huge {
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    .logo-huge {
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 920px) {
+    .logo-huge {
+        width: 100%;
+        height: auto;
+    }
+}

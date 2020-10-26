@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+}
+
+.header-container {
+    /*background: linear-gradient(to right, #E6B954, #9E0000, #32466D);*/
+    background: #00220e;
+    /*background: radial-gradient(#32466D, #28040F);*/
+    font-family: 'Bitter', serif;
+}
+
+header {
+    display: flex;
+    color: aliceblue;
+    height: 10vh;
+    width: 90%;
+    margin: auto;
+    align-items: center;
+}
+
+.logo-container, .nav-links, .log-in {
+    display: flex;
+}
+
+.logo-container {
+    flex: 1;
+    /*background: linear-gradient(to right, #E6B954, #9E0000);*/
+
+}
+
+.logo-container .logo {
+    font-family: 'Sansita Swashed', cursive;
+    margin: 10px;
+    font-weight: 400;
+    /*font-size: 30px;*/
+    /*color: #9E0000;*/
+}
+
+/*.logo span {*/
+/*    color: #E6B954;*/
+/*}*/
+
+nav {
+    flex: 2;
+}
+
+.nav-links {
+    justify-content: space-around;
+    list-style: none;
+}
+
+.nav-link {
+    color: #E6B954;
+    font-size: 18px;
+    text-decoration: none;
+}
+.nav-link:hover {
+    color: white;
+    margin: 5px;
+}
+.log-in-link{
+    color: #dedada;
+    font-size: 18px;
+    text-decoration: none;
+}
+/*.log-in-link span{*/
+/*    color: #E6B954;*/
+/*}*/
+.log-in-link:hover {
+    color: white;
+    margin: 5px;
+}
+/*.log-in-link span:hover{*/
+/*    color: white;*/
+/*}*/
+
+
+.log-in {
+    flex: 1;
+    justify-content: flex-end;
+    margin: 10px;
+    list-style: none;
+}
+
+.slide-container {
+
+}

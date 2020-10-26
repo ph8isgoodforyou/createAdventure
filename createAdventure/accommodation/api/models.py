@@ -1,8 +1,11 @@
 from django.db import models
 from enum import IntEnum
-
+from django.conf import settings
 
 # Create your models here.
+import country
+
+
 class AccommodationTypes(IntEnum):
     Hotel = 1
     Hostel = 2
@@ -41,3 +44,5 @@ class Accommodation(models.Model):
     price = models.FloatField(max_length=100)
     rating = models.IntegerField(choices=RatingTypes.choices(), default=RatingTypes.FIVE_STAR)
     date = models.DateField()
+    # fk_country = models.ForeignKey(country.api.models.Country, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

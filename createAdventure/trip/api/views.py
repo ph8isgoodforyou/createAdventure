@@ -1,10 +1,13 @@
 import coreschema
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 from requests import Response
-from rest_framework.decorators import api_view
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 
 from country.api.views import CountrySchema
@@ -25,34 +28,9 @@ class TripSchema(AutoSchema):
         if method.lower() in ['post', 'put']:
             extra_fields = [
                 coreapi.Field(
-                    'trip_type',
+                    'title',
                     required=True,
-                    type='integer',
                 ),
-                coreapi.Field(
-                    'overall_price',
-                    required=True,
-                    type='number',
-                ),
-                coreapi.Field(
-                    'list_of_items',
-                    required=True
-                ),
-                coreapi.Field(
-                    'countries',
-                    required=False,
-
-                ),
-            ]
-        manual_fields = super().get_manual_fields(path, method)
-        return manual_fields + extra_fields
-
-class TripCountrySchema(AutoSchema):
-    def get_manual_fields(self, path, method):
-        schema = CountrySchema()
-        extra_fields = []
-        if method.lower() in ['post', 'put']:
-            extra_fields = [
                 coreapi.Field(
                     'trip_type',
                     required=True,
@@ -67,7 +45,16 @@ class TripCountrySchema(AutoSchema):
                     'list_of_items',
                     required=True
                 ),
-                # schema,
+                # coreapi.Field(
+                #     'countries',
+                #     required=False,
+                #
+                # ),
+                # coreapi.Field(
+                #     'author_id',
+                #     required=False,
+                #     type='number',
+                # ),
             ]
         manual_fields = super().get_manual_fields(path, method)
         return manual_fields + extra_fields
@@ -77,23 +64,31 @@ class listOfTrips(APIView):
     List all trips, or create a new trip.
     """
 
+    permission_classes = [IsAuthenticated]
+
     schema = TripSchema()
 
     def get(self, request):
-        trips = TripModel.objects.all()
-        if trips.count() > 0:
-            serializer = TripSerializer(trips, many=True)
-            return JsonResponse(serializer.data, safe=False)
+        user = request.user
+        if user.is_staff:
+            trips = TripModel.objects.all()
+            if trips.count() > 0:
+                serializer = TripSerializer(trips, many=True)
+                return JsonResponse(serializer.data, safe=False)
+            else:
+                return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
         else:
-            # return JsonResponse(status=status.HTTP_404_NOT_FOUND)
-            return JsonResponse('HTTP_404_NOT_FOUND', safe=False)
+            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
 
     def post(self, request):
-        serializer = TripSerializer(data=request.data)
+        # account = request.user
+        trip = TripModel(author=request.user)
+        serializer = TripSerializer(trip, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Trip(APIView):
     """
@@ -101,6 +96,9 @@ class Trip(APIView):
     """
 
     schema = TripSchema()
+
+    # @authentication_classes([TokenAuthentication])
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -110,23 +108,50 @@ class Trip(APIView):
         except TripModel.DoesNotExist:
             return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 
+
     def put(self, request, pk):
         try:
             trip = TripModel.objects.get(pk=pk)
-            serializer = TripSerializer(trip, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            user = request.user
+
+            if user.is_staff:
+                serializer = TripSerializer(trip, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            elif trip.author == user:
+                serializer = TripSerializer(trip, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            elif trip.author != user:
+                return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+
         except TripModel.DoesNotExist:
             return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+
 
     def delete(self, request, pk):
         try:
             trip = TripModel.objects.get(pk=pk)
-            trip.delete()
-            return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+
+            user = request.user
+            if user.is_staff:
+                trip.delete()
+                return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+            elif trip.author == user:
+                trip.delete()
+                return JsonResponse(204, status=status.HTTP_204_NO_CONTENT, safe=False)
+            elif trip.author != user:
+                return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+
         except TripModel.DoesNotExist:
             return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
 

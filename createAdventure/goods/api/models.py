@@ -1,5 +1,5 @@
 from enum import IntEnum
-
+from django.conf import settings
 from django.db import models
 
 class ItemState(IntEnum):
@@ -35,6 +35,7 @@ class Item(models.Model):
     state = models.IntegerField(choices=ItemState.choices(), default=ItemState.New)
     description = models.CharField(max_length=500)
     type_of_item = models.IntegerField(choices=ItemType.choices(), default=ItemType.Unspecified)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 

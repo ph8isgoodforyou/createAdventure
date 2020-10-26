@@ -1,5 +1,8 @@
 from enum import IntEnum
 from django.db import models
+from django.conf import settings
+
+import country
 
 
 class RatingTypes(IntEnum):
@@ -21,4 +24,6 @@ class PointOfInterest(models.Model):
     images_links = models.CharField(max_length=100)
     rating = models.IntegerField(choices=RatingTypes.choices(), default=RatingTypes.FIVE_STAR)
     address = models.CharField(max_length=100)
+    # fk_country = models.ForeignKey(country.api.models.Country, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 

@@ -10,9 +10,12 @@ class TripSerializer(serializers.ModelSerializer):
         model = Trip
         fields = [
             'id',
+            'title',
             'trip_type',
             'overall_price',
             'list_of_items',
+            'date_published',
+            'date_updated',
         ]
 
 

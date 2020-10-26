@@ -5,4 +5,9 @@ from .models import PlaceToEat
 class PlaceToEatSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceToEat
-        fields = '__all__'
+        fields = [
+            'id',
+            'title',
+            'institution_type',
+            'rating',
+        ]

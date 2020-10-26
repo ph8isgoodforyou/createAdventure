@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <title>Home</title>
+</head>
+<body>
+    <div class="header-container">
+        <header>
+            <div class="logo-container">
+                <h3 class="logo"><span>create</span>Adventure</h3>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a class="nav-link" href="#">Shop</a></li>
+                    <li><a class="nav-link" href="#">Gallery</a></li>
+                    <li><a class="nav-link" href="#">Reviews</a></li>
+                    <li><a class="nav-link" href="#">About</a></li>
+                </ul>
+            </nav>
+            <div class="log-in">
+                <li><a class="log-in-link" href="{% url 'login' %}"><span>Log</span>In</a></li>
+            </div>
+        </header>
+    </div>
+{#    <div class="slide-container">#}
+{#        <img src="{% static 'img/compass.jpg' %}" alt="">#}
+{#    </div>#}
+</body>
+</html>

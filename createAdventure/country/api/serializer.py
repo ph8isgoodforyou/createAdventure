@@ -6,5 +6,13 @@ class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         ordering = ['-id']
         model = Country
-        fields = '__all__'
+        fields = [
+            'id',
+            'name',
+            'population',
+            'largest_city',
+            'religion',
+            'currency',
+            'time_zone',
+        ]
         # extra_kwargs = {'trips': {'required': False}}
