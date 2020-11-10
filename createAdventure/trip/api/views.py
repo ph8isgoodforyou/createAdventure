@@ -64,21 +64,25 @@ class listOfTrips(APIView):
     List all trips, or create a new trip.
     """
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     schema = TripSchema()
 
     def get(self, request):
-        user = request.user
-        if user.is_staff:
-            trips = TripModel.objects.all()
-            if trips.count() > 0:
-                serializer = TripSerializer(trips, many=True)
-                return JsonResponse(serializer.data, safe=False)
-            else:
-                return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+        trips = TripModel.objects.all()
+        # user = request.user
+        # if user.is_staff:
+        #     trips = TripModel.objects.all()
+        # else:
+        #     trips = TripModel.objects.filter(author=user.id)
+
+        if trips.count() > 0:
+            serializer = TripSerializer(trips, many=True)
+            return JsonResponse(serializer.data, safe=False)
         else:
-            return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
+            return JsonResponse(404, status=status.HTTP_404_NOT_FOUND, safe=False)
+        # else:
+        #     return JsonResponse(401, status=status.HTTP_401_UNAUTHORIZED, safe=False)
 
     def post(self, request):
         # account = request.user

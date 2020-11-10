@@ -28,5 +28,8 @@ class Trip(models.Model):
     list_of_items = models.CharField(max_length=1000)
     date_published = models.DateTimeField(auto_now_add=True, verbose_name="date published")
     date_updated = models.DateTimeField(auto_now=True, verbose_name="date updated")
+    # time_published = models.TimeField(auto_now_add=True, verbose_name="date published")
+    # time_updated = models.TimeField(auto_now=True, verbose_name="date updated")
+
     # countries = models.ManyToOneRel('country.Country', related_name='countries', blank=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

@@ -8,7 +8,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from account.models import update_auth_token
 from .models import Accommodation as AccommodationModel
 from .serializer import AccommodationSerializer
 from rest_framework import status, generics
